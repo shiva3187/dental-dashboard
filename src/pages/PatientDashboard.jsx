@@ -12,10 +12,11 @@ const PatientDashboard = () => {
     dob: "",
     contact: "",
     description: "",
-    date: ""
+    date: "",
   });
 
   const [appointments, setAppointments] = useState([]);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("appointments")) || [];
@@ -38,7 +39,7 @@ const PatientDashboard = () => {
       contact: form.contact,
       description: form.description,
       date: form.date,
-      status: "Pending"
+      status: "Pending",
     };
 
     const allAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
@@ -47,6 +48,10 @@ const PatientDashboard = () => {
     setAppointments(updatedAppointments.filter((a) => a.patientId === user.id));
 
     setForm({ name: "", dob: "", contact: "", description: "", date: "" });
+
+    // ✅ Show toast
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   const upcoming = appointments.filter((a) => a.status === "Pending");
@@ -58,6 +63,14 @@ const PatientDashboard = () => {
       <div className="ml-64 flex flex-col w-full min-h-screen">
         <Header />
         <main className="flex-1 p-6 bg-gray-100">
+
+          {/* ✅ Toast Message */}
+          {showToast && (
+            <div className="fixed top-5 right-5 bg-green-600 text-white px-4 py-2 rounded shadow-md z-50">
+              Appointment booked successfully!
+            </div>
+          )}
+
           <h1 className="text-2xl font-bold text-blue-700 mb-6">Book Appointment</h1>
 
           <form
@@ -119,7 +132,9 @@ const PatientDashboard = () => {
 
           {/* Upcoming Appointments */}
           <div className="mb-10">
-            <h2 className="text-xl font-semibold text-blue-600 mb-2">Upcoming Appointments</h2>
+            <h2 className="text-xl font-semibold text-blue-600 mb-2">
+              Upcoming Appointments
+            </h2>
             {upcoming.length > 0 ? (
               <ul className="space-y-3">
                 {upcoming.map((a) => (
