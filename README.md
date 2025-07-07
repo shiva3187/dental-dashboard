@@ -5,7 +5,7 @@ A complete dental center management system for Admins and Patients. Built using 
 ---
 
 ## 🔗 Deployed App  
-(https://dental-dashboard-five.vercel.app/dashboard)
+(https://dental-dashboard-five.vercel.app)
 
 ## 📁 GitHub Repo  
 [https://github.com/shiva3187/dental-dashboard](https://github.com/shiva3187/dental-dashboard)
