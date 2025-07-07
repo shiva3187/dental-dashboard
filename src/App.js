@@ -1,24 +1,69 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import PrivateRoute from "./routes/PrivateRoute";
+
+import Login from "./pages/Login";
+import Patients from "./pages/Patients";
+import Incidents from "./pages/Incidents";
+import Calendar from "./pages/Calendar";
+import AdminDashboard from "./pages/AdminDashboard";
+import PatientDashboard from "./pages/PatientDashboard";
+
+function AppWrapper() {
+  const { user } = useAuth();
+
+  return (
+    <Routes>
+      {/* Public Route */}
+      <Route path="/" element={<Login />} />
+
+      {/* Role-based Dashboard */}
+      <Route
+  path="/dashboard"
+  element={
+    <PrivateRoute>
+      {user?.role === "Admin" ? <AdminDashboard /> : <PatientDashboard />}
+    </PrivateRoute>
+  }
+/>
+
+
+      {/* Admin Only Routes */}
+      <Route
+        path="/patients"
+        element={
+          <PrivateRoute>
+            <Patients />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/incidents/:patientId"
+        element={
+          <PrivateRoute>
+            <Incidents />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/calendar"
+        element={
+          <PrivateRoute>
+            <Calendar />
+          </PrivateRoute>
+        }
+      />
+    </Routes>
+  );
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppWrapper />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
