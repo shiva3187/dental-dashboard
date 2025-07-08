@@ -49,23 +49,42 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleCompleteWithPayment = () => {
-    const updated = appointments.map((a) =>
-      a.id === selectedAppointmentId
-        ? {
-            ...a,
-            status: "Completed",
-            cost: paymentInfo.cost || "0",
-            comment: paymentInfo.comment,
-          }
-        : a
-    );
-    setAppointments(updated);
-    localStorage.setItem("appointments", JSON.stringify(updated));
-    updateStatus(selectedAppointmentId, "Completed");
-    setShowPaymentModal(false);
-    setPaymentInfo({ cost: "", comment: "" });
-  };
+const handleCompleteWithPayment = () => {
+  const updated = appointments.map((a) =>
+    a.id === selectedAppointmentId
+      ? {
+          ...a,
+          status: "Completed",
+          cost: paymentInfo.cost || "0",
+          comment: paymentInfo.comment,
+        }
+      : a
+  );
+  setAppointments(updated);
+  localStorage.setItem("appointments", JSON.stringify(updated));
+
+  // Update patients list if it's a new patient
+  const completedAppt = updated.find((a) => a.id === selectedAppointmentId);
+  const existingPatients = JSON.parse(localStorage.getItem("patients")) || [];
+
+  const patientExists = existingPatients.some((p) => p.id === completedAppt.patientId);
+  if (!patientExists) {
+    const newPatient = {
+      id: completedAppt.patientId,
+      name: completedAppt.name || completedAppt.email || "Unnamed",
+      dob: completedAppt.dob || "",
+      contact: completedAppt.contact || "",
+      healthInfo: completedAppt.description || "Not specified",
+    };
+    const updatedPatients = [...existingPatients, newPatient];
+    localStorage.setItem("patients", JSON.stringify(updatedPatients));
+    setPatients(updatedPatients);
+  }
+
+  setShowPaymentModal(false);
+  setPaymentInfo({ cost: "", comment: "" });
+};
+
 
   const next10 = [...appointments]
     .filter((a) => a.status !== "Completed" && a.status !== "Cancelled")
